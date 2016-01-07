@@ -1,0 +1,8 @@
+div#spreadsheet {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+input.cell {
+  width: 100px;
+}
