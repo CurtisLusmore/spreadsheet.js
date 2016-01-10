@@ -1,3 +1,7 @@
+function sum(arr) {
+    return arr.reduce((a, b) => a+b);
+}
+
 var grid = (function () {
     function createCell(sheet, r, c) {
         var callbacks = {};
@@ -25,6 +29,7 @@ var grid = (function () {
         }
         cell.onchange = function () {
             var get = (r, c) => sheet.get(cell, r, c).rawValue;
+            var range = (r0, c0, r1, c1) => sheet.range(cell, r0, c0, r1, c1).map(row => row.map(cell => cell.rawValue));
             var value = cell.value;
             if (value.length > 0 && value[0] === '=') {
                 cell.formula = value;
@@ -68,6 +73,17 @@ var grid = (function () {
             var target = sheet.rows[r].get(c);
             target.register(cell);
             return target;
+        };
+        sheet.range = function (cell, r0, c0, r1, c1) {
+            var targets = [];
+            for (var r = r0; r <= r1; r++) {
+                var row = [];
+                for (var c = c0; c <= c1; c++) {
+                    row.push(sheet.get(cell, r, c));
+                }
+                targets.push(row);
+            }
+            return targets;
         };
         return sheet;
     }
