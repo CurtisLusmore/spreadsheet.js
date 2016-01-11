@@ -1,13 +1,11 @@
-function sum(arr) {
-    return arr.reduce((a, b) => a+b);
-}
-
 var grid = (function () {
     function createCell(sheet, r, c) {
         var callbacks = {};
         var cell = document.createElement('input');
         cell.className = 'cell';
         cell.id = 'cell-'+r+'-'+c;
+        cell.r = r;
+        cell.c = c;
 
         cell.rawValue = cell.value;
         cell.register = function (source) {
@@ -28,14 +26,12 @@ var grid = (function () {
             }
         }
         cell.onchange = function () {
-            var get = (r, c) => sheet.get(cell, r, c).rawValue;
-            var range = (r0, c0, r1, c1) => sheet.range(cell, r0, c0, r1, c1).map(row => row.map(cell => cell.rawValue));
             var value = cell.value;
             if (value.length > 0 && value[0] === '=') {
                 cell.formula = value;
                 value = value.substr(1);
                 cell.calculate = () => {
-                    cell.rawValue = eval(value);
+                    cell.rawValue = sheet.execute(cell, value);
                     cell.value = cell.rawValue;
                     cell.callbacks();
                 };
@@ -89,7 +85,19 @@ var grid = (function () {
     }
 
     function init(id) {
-        var sheet = createSheet();
+        var script = document.createElement('textarea');
+
+        var sheet = createSheet(script);
+        sheet.execute = function (cell, equation) {
+            var get = (r, c) => sheet.get(cell, r, c).rawValue;
+            var range = (r0, c0, r1, c1) => sheet.range(cell, r0, c0, r1, c1).map(row => row.map(cell => cell.rawValue));
+            var r = cell.r;
+            var c = cell.c;
+
+            eval(script.value);
+            return eval(equation);
+        };
+
         var height = 50;
         var width = 20;
         var rows = [];
@@ -101,7 +109,9 @@ var grid = (function () {
             rows.push(createRow(r, row));
         }
         sheet.addRows(rows);
+
         var container = document.getElementById(id);
+        container.appendChild(script);
         container.appendChild(sheet);
         return sheet;
     }
