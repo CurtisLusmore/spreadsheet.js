@@ -86,6 +86,7 @@ var grid = (function () {
 
     function init(id) {
         var script = document.createElement('textarea');
+        script.className = 'script';
 
         var sheet = createSheet(script);
         sheet.execute = function (cell, equation) {

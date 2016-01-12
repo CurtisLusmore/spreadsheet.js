@@ -1,3 +1,13 @@
+textarea.script {
+    width: 900px;
+    height: 50px;
+}
+
+textarea.script:focus {
+    width: 900px;
+    height: 300px;
+}
+
 div#spreadsheet {
     display: inline-block;
     white-space: nowrap;
